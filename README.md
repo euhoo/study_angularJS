@@ -1,1 +1,1 @@
-# ang
+Studying angularJS.
