@@ -7,10 +7,39 @@
     <script src="lib/angular/angular.js"></script>
     <script src="js/controllers.js"></script>
   </head>
-  <body>
-    <div ng-controller="DemoCtrl">
-      <p>Hello, {{name}}!</p>
-    </div>
+  <body ng-controller="PhoneListCtrl">
+    <h1>{{title}}</h1>
+    <input type="text" ng-model="query">
+    <div class="container">
+<ul ng-repeat="phone in phones | filter: {name:query} && doneAndFilter">
+  <li>
+    <span>{{phone.name}}</span>
+    <p>
+      {{phone.snippet}}
+      <br>
+      Status: {{phone.status}}</p>
+  </li>
+  <p>Общее количество телефонов: {{phones.length}}</p>
+</ul>
+</div>
+<div class="container">
+  <table>
+    <thead>
+      <tr>
+        <th><a href="" ng-click="sort('name')">
+          Name
+        <i class="glyphicon" ng-class="{'glyphicon-chevron-up': isSortUp('name'),
+                                      'glyphicon-chevron-down': isSortDown('name')}"></i>
+        </a></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="phone in phones | orderBy:sortField:reverse">
+        <td>{{phone.name}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
   </body>
 </html>
