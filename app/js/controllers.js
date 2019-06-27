@@ -31,6 +31,12 @@ phonecatApp.config(['$routeProvider', '$locationProvider', function($routeProvid
   })
 }]);
 
+// Filter
+
+phonecatApp.filter('checkmark', () => input => {
+  return input ? '\u2713' : '\u2718';
+})
+
 phonecatApp.controller('AboutCtrl',['$scope','$http', '$location', function($scope, $http, $location) {
 
 }]);
@@ -40,6 +46,21 @@ phonecatApp.controller('ContactCtrl',['$scope','$http', '$location', function($s
 
 phonecatApp.controller('PhoneDetailCtrl',['$scope','$http', '$location', '$routeParams', function($scope, $http, $location, $routeParams) {
   $scope.phoneId = $routeParams.phoneId;
+  const url = `phones/${$routeParams.phoneId}.json`;
+  const obj = {
+    'method': 'GET',
+    'url': url
+  };
+  $http(obj)
+  .then(data => {
+    $scope.phone = data.data;
+    
+    $scope.mainImageUrl = data.data.images[0];
+
+    $scope.setImage = (imageUrl) => {
+      $scope.mainImageUrl = imageUrl;
+    }
+  })
 }]);
 
 phonecatApp.controller('PhoneListCtrl',['$scope','$http', '$location', function($scope, $http, $location) {
