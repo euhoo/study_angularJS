@@ -1,9 +1,9 @@
 'use strict';
 
 /* Controllers */
-var phonecatApp = angular.module('phonecatApp', ['ngRoute']);
+const phonecatApp = angular.module('phonecatApp', ['ngRoute', 'ngResource']);
 
-phonecatApp.config(['$routeProvider', '$locationProvider', function($routeProvide,$locationProvider) {
+phonecatApp.config(['$routeProvider', '$locationProvider', ($routeProvide,$locationProvider) => {
   $locationProvider
   .html5Mode({
     enabled: true,
@@ -30,6 +30,13 @@ phonecatApp.config(['$routeProvider', '$locationProvider', function($routeProvid
     redirectTo: '/'
   })
 }]);
+// Factory
+phonecatApp.factory('Phone', [
+  '$resource', $resourse => $resourse('phones/:phoneId.:format', {
+    phoneId: 'phones',
+    format: 'json'
+  })
+]);
 
 // Filter
 
@@ -37,16 +44,26 @@ phonecatApp.filter('checkmark', () => input => {
   return input ? '\u2713' : '\u2718';
 })
 
-phonecatApp.controller('AboutCtrl',['$scope','$http', '$location', function($scope, $http, $location) {
+phonecatApp.controller('AboutCtrl',['$scope','$http', '$location', ($scope, $http, $location) => {
 
 }]);
-phonecatApp.controller('ContactCtrl',['$scope','$http', '$location', function($scope, $http, $location) {
+phonecatApp.controller('ContactCtrl',['$scope','$http', '$location', ($scope, $http, $location) => {
 
 }]);
 
-phonecatApp.controller('PhoneDetailCtrl',['$scope','$http', '$location', '$routeParams', function($scope, $http, $location, $routeParams) {
+phonecatApp.controller('PhoneDetailCtrl',[
+  '$scope','$http', '$location', '$routeParams','Phone',
+   ($scope, $http, $location, $routeParams, Phone) => {
   $scope.phoneId = $routeParams.phoneId;
   const url = `phones/${$routeParams.phoneId}.json`;
+  Phone.get({phoneId: $routeParams.phoneId}, data => {
+    $scope.phone = data;
+    $scope.mainImageUrl = data.images[0];
+  });
+  $scope.setImage = (imageUrl) => {
+    $scope.mainImageUrl = imageUrl;
+  }
+/*
   const obj = {
     'method': 'GET',
     'url': url
@@ -60,11 +77,15 @@ phonecatApp.controller('PhoneDetailCtrl',['$scope','$http', '$location', '$route
     $scope.setImage = (imageUrl) => {
       $scope.mainImageUrl = imageUrl;
     }
-  })
+  });
+  */
 }]);
 
-phonecatApp.controller('PhoneListCtrl',['$scope','$http', '$location', function($scope, $http, $location) {
-    $scope.title = 'Телефоны';
+phonecatApp.controller('PhoneListCtrl',[
+  '$scope','$http', '$location','Phone',
+  ($scope, $http, $location, Phone) => {
+    $scope.phones = Phone.query();
+    /*
     const obj = {
       "method": "GET",
       "url":'phones/phones.json'
@@ -72,6 +93,7 @@ phonecatApp.controller('PhoneListCtrl',['$scope','$http', '$location', function(
     $http(obj).then(response => {
         $scope.phones = response.data;
     });
+    */
 
 }]);
 
